@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PremiumAddons - Minecraft Addon Platform</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="bg-blur bg-blur-1"></div>
+  <div class="bg-blur bg-blur-2"></div>
+  <div class="bg-blur bg-blur-3"></div>
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Navbar -->
+  <header class="navbar-glass">
+    <div class="nav-brand" onclick="navigateTo('home')">
+      <i class="fa-solid fa-cube logo-icon"></i>
+      <span class="brand-name">Premium<span>Addons</span></span>
+    </div>
+    <nav class="nav-links">
+      <button class="nav-btn active" data-page="home" onclick="navigateTo('home')"><i class="fa-solid fa-house"></i> Home</button>
+      <button class="nav-btn" data-page="liked" onclick="navigateTo('liked')"><i class="fa-solid fa-heart"></i> Liked</button>
+      <button class="nav-btn" data-page="saved" onclick="navigateTo('saved')"><i class="fa-solid fa-bookmark"></i> Saved</button>
+      <button class="nav-btn" data-page="history" onclick="navigateTo('history')"><i class="fa-solid fa-clock-rotate-left"></i> History</button>
+      <button class="nav-btn" data-page="profile" onclick="navigateTo('profile')"><i class="fa-solid fa-user-gear"></i> Profile</button>
+    </nav>
+    <button class="btn-upload-nav" onclick="openUploadModal()">
+      <i class="fa-solid fa-plus"></i> <span>Upload Addon</span>
+    </button>
+  </header>
+
+  <main class="main-content">
+    <!-- HOME VIEW -->
+    <section id="view-home" class="view-section active">
+      <div class="hero-glass">
+        <h1>Temukan & Bagikan Addon Minecraft Terbaik</h1>
+        <p>Jelajahi ribuan addon berkualitas tanpa perlu registrasi atau login akun.</p>
+        <div class="search-filter-box">
+          <div class="search-input-wrapper">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="search-input" placeholder="Cari nama addon, deskripsi, atau pembuat..." oninput="filterAddons()">
+          </div>
+          <div class="filter-wrapper">
+            <select id="sort-select" onchange="filterAddons()">
+              <option value="newest">Terbaru</option>
+              <option value="rating">Rating Tertinggi</option>
+              <option value="likes">Paling Disukai</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="section-header">
+        <h2>Daftar Addon</h2>
+        <span id="addon-count" class="badge">0 Addon</span>
+      </div>
+      <div id="addon-grid" class="addon-grid"></div>
+    </section>
+
+    <!-- LIKED VIEW -->
+    <section id="view-liked" class="view-section">
+      <div class="section-header"><h2><i class="fa-solid fa-heart text-danger"></i> Addon Disukai</h2></div>
+      <div id="liked-grid" class="addon-grid"></div>
+    </section>
+
+    <!-- SAVED VIEW -->
+    <section id="view-saved" class="view-section">
+      <div class="section-header"><h2><i class="fa-solid fa-bookmark text-primary"></i> Addon Disimpan</h2></div>
+      <div id="saved-grid" class="addon-grid"></div>
+    </section>
+
+    <!-- HISTORY VIEW -->
+    <section id="view-history" class="view-section">
+      <div class="section-header">
+        <h2><i class="fa-solid fa-clock-rotate-left"></i> Riwayat Dilihat</h2>
+        <button class="btn-secondary-glass" onclick="clearHistory()"><i class="fa-solid fa-trash"></i> Hapus History</button>
+      </div>
+      <div id="history-grid" class="addon-grid"></div>
+    </section>
+
+    <!-- PROFILE VIEW -->
+    <section id="view-profile" class="view-section">
+      <div class="profile-card-glass">
+        <div class="profile-header">
+          <div class="profile-avatar-wrapper">
+            <img id="profile-avatar-img" src="https://api.dicebear.com/7.x/bottts/svg?seed=Guest" alt="Guest Avatar">
+          </div>
+          <div class="profile-info">
+            <h2 id="profile-display-name">Guest User</h2>
+            <p id="profile-id-text" class="text-muted">Visitor ID: Loading...</p>
+          </div>
+        </div>
+        <form id="profile-form" onsubmit="saveGuestProfile(event)" class="profile-form">
+          <div class="form-group">
+            <label>Nama Tampilan (Guest Name)</label>
+            <input type="text" id="profile-name-input" class="glass-input" placeholder="Masukkan nama Anda..." required>
+          </div>
+          <div class="form-group">
+            <label>Link Foto Profil (Opsional - Imgur/Discord dsb)</label>
+            <input type="url" id="profile-avatar-url" class="glass-input" placeholder="https://contoh.com/foto.png">
+          </div>
+          <button type="submit" class="btn-primary-glass" style="width: 100%; margin-top: 10px;"><i class="fa-solid fa-floppy-disk"></i> Simpan Profil</button>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <!-- Mobile Bottom Nav -->
+  <nav class="bottom-nav-glass">
+    <button class="bottom-nav-btn active" data-page="home" onclick="navigateTo('home')">
+      <i class="fa-solid fa-house"></i><span>Home</span>
+    </button>
+    <button class="bottom-nav-btn" data-page="liked" onclick="navigateTo('liked')">
+      <i class="fa-solid fa-heart"></i><span>Liked</span>
+    </button>
+    <button class="bottom-nav-btn" onclick="openUploadModal()">
+      <div class="upload-fab"><i class="fa-solid fa-plus"></i></div>
+    </button>
+    <button class="bottom-nav-btn" data-page="saved" onclick="navigateTo('saved')">
+      <i class="fa-solid fa-bookmark"></i><span>Saved</span>
+    </button>
+    <button class="bottom-nav-btn" data-page="profile" onclick="navigateTo('profile')">
+      <i class="fa-solid fa-user"></i><span>Profile</span>
+    </button>
+  </nav>
+
+  <!-- MODAL UPLOAD ADDON (TIDAK PAKAI FILE, PAKAI LINK) -->
+  <div id="upload-modal" class="modal-overlay">
+    <div class="modal-glass">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-cloud-arrow-up"></i> Upload Addon</h3>
+        <button class="modal-close" onclick="closeUploadModal()">&times;</button>
+      </div>
+      <form id="upload-form" onsubmit="handleUploadAddon(event)">
+        <div class="form-group">
+          <label>Link Gambar Thumbnail (Harus URL)</label>
+          <input type="url" id="upload-thumbnail" class="glass-input" placeholder="https://i.imgur.com/gambar.png" required>
+        </div>
+        <div class="form-group">
+          <label>Nama Addon</label>
+          <input type="text" id="upload-name" class="glass-input" placeholder="Contoh: More Swords Addon" required>
+        </div>
+        <div class="form-group">
+          <label>Versi Addon</label>
+          <input type="text" id="upload-version" class="glass-input" placeholder="v1.0.0" required>
+        </div>
+        <div class="form-group">
+          <label>Deskripsi Addon</label>
+          <textarea id="upload-desc" class="glass-input" rows="3" placeholder="Jelaskan fitur menarik addon ini..." required></textarea>
+        </div>
+        <div class="form-group">
+          <label>Link Download Addon (MediaFire / Linkvertise dll)</label>
+          <input type="url" id="upload-file" class="glass-input" placeholder="https://mediafire.com/file/..." required>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-secondary-glass" onclick="closeUploadModal()">Batal</button>
+          <button type="submit" id="btn-submit-upload" class="btn-primary-glass">Publish Addon</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL DETAIL ADDON -->
+  <div id="detail-modal" class="modal-overlay">
+    <div class="modal-glass modal-large">
+      <button class="modal-close" onclick="closeDetailModal()">&times;</button>
+      <div id="detail-modal-body" class="detail-body"></div>
+    </div>
+  </div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>ass="detail-body">
+        </div>
+    </div>
+  </div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>-content">
+        <!-- Diisi oleh JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast-container" class="fixed bottom-4 left-1/2 -translate-x-1/2 z-[70] flex flex-col gap-2"></div>
+
+  <!-- App Logic -->
+  <script type="module" src="app.js"></script>
+</body>
+</html>
